@@ -5,10 +5,10 @@ const pendingSlice = createSlice({
   initialState: null,
   reducers: {
     addPending: (state, action) => action.payload,
-    // removePending: (state, action) => null,
+    removePending: (state, action) => null,
   },
 });
 
-export const { addPending } = pendingSlice.actions;
+export const { addPending, removePending } = pendingSlice.actions;
 
 export default pendingSlice.reducer;

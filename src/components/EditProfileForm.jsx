@@ -23,6 +23,11 @@ const EditProfileForm = ({ user }) => {
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "about" && value.length > 77) {
+      return; // Block further input
+    }
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -145,16 +150,33 @@ const EditProfileForm = ({ user }) => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-blue-400 text-xs font-bold uppercase tracking-widest">
-                  "bio_content":
-                </label>
+                <div className="flex justify-between items-end">
+                  <label className="text-blue-400 text-xs font-bold uppercase tracking-widest">
+                    "bio_tagline":
+                  </label>
+                  {/* Dynamic Character Counter */}
+                  <span
+                    className={`text-[10px] font-mono transition-colors duration-300 ${
+                      formData.about?.length >= 70
+                        ? "text-orange-500 animate-pulse"
+                        : "text-slate-500"
+                    }`}
+                  >
+                    // Buffer: {formData.about?.length || 0}/77_chars
+                  </span>
+                </div>
+
                 <textarea
                   name="about"
-                  value={formData.about}
+                  value={formData.about || ""}
                   onChange={handleChange}
-                  rows="4"
-                  className="w-full bg-[#030712] border border-slate-800 focus:border-indigo-500 outline-none px-4 py-4 rounded text-sm resize-none text-orange-200"
+                  rows="2"
+                  placeholder="Briefly describe your tech stack..."
+                  className="w-full bg-[#030712] border border-slate-800 focus:border-indigo-500 outline-none px-4 py-3 rounded text-sm resize-none text-orange-200 transition-all font-mono"
                 />
+                <p className="text-[9px] text-slate-600 italic">
+                  &gt; System_Note: Character overflow protection active.
+                </p>
               </div>
 
               <div className="min-h-[48px]">

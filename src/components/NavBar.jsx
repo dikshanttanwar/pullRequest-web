@@ -1,5 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
+import { clearFeed } from "../utils/feedSlice";
 import { deleteUser } from "../utils/userSlice";
+import { removePending } from "../utils/pendingSlice";
+import { addConnections } from "../utils/connectionSlice";
+import { addRequest } from "../utils/requestSlice";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
@@ -15,7 +19,13 @@ const NavBar = () => {
   const handleLogout = async () => {
     try {
       await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
-      dispatch(deleteUser());
+
+      // Clear ALL slices
+      dispatch(deleteUser()); // Clears user metadata
+      dispatch(clearFeed()); // Clears user metadata
+      dispatch(addConnections(null)); // Clears the network list
+      dispatch(removePending()); // Clears user metadata
+      dispatch(addRequest(null)); // Clears incoming requests
       navigate("/login");
     } catch (err) {
       console.error("Logout Error:", err);
@@ -104,7 +114,9 @@ const NavBar = () => {
                     className="w-full h-full object-cover"
                   />
                 )}
-                {!loggedInUser.photoURL && <p>{loggedInUser.firstName[0].toUpperCase()}</p>}
+                {!loggedInUser.photoURL && (
+                  <p>{loggedInUser.firstName[0].toUpperCase()}</p>
+                )}
               </div>
 
               <ul
