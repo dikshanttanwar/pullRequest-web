@@ -35,10 +35,6 @@ const Feed = () => {
 
   //Handler to set direction before dispatching remove
   const handleRemove = async (direction, userId) => {
-    console.log(direction);
-    console.log("---------------------------");
-    console.log(userId);
-
     try {
       const res = await axios.post(
         BASE_URL + `/request/${direction}/${userId}`,

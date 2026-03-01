@@ -14,6 +14,7 @@ const Signup = () => {
   });
 
   const [error, setError] = useState("");
+  const [showToast, setShowToast] = useState(false); 
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -32,9 +33,8 @@ const Signup = () => {
       const res = await axios.post(BASE_URL + "/signup", formData, {
         withCredentials: true,
       });
-
+      setShowToast(true);
       dispatch(addUser(res?.data?.data));
-
       navigate("/profile");
     } catch (err) {
       setError(
@@ -45,10 +45,58 @@ const Signup = () => {
     }
   };
 
+  const closeToast = () => {
+    setShowToast(false);
+  };
+
   return (
     <div className="min-h-175 bg-[#030712] flex items-center justify-center font-mono p-4">
+
+      <div
+        className={`fixed bottom-10 right-8 z-[250] transition-all duration-500 transform ${
+          showToast
+            ? "translate-y-0 opacity-100"
+            : "translate-y-12 opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="bg-[#0b0f1a] border border-emerald-500/30 rounded-lg shadow-2xl shadow-emerald-500/10 min-w-[320px] overflow-hidden">
+          {/* Top Bar: Minimalist Tabs */}
+          <div className="bg-[#161b22] px-4 py-1.5 border-b border-slate-800 flex justify-between items-center">
+            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">
+              System_Output
+            </span>
+            <div className="flex gap-1">
+              <div
+                className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 cursor-pointer"
+                onClick={closeToast}
+              ></div>
+            </div>
+          </div>
+
+          {/* Content: Terminal Logs */}
+          <div className="p-4 font-mono space-y-2">
+            <div className="flex items-start gap-3">
+              <span className="text-emerald-500 font-bold shrink-0">&gt;</span>
+              <div className="space-y-1">
+                <p className="text-white text-[11px] leading-none uppercase font-black tracking-tight">
+                  User_Deployment_Successful
+                </p>
+                <p className="text-slate-500 text-[9px] uppercase">
+                  Status: <span className="text-emerald-400">201_CREATED</span>{" "}
+                  // Hash: {Math.random().toString(16).slice(2, 8)}
+                </p>
+              </div>
+            </div>
+
+            {/* Visual Progress Bar */}
+            <div className="w-full h-[2px] bg-slate-800 mt-3 relative overflow-hidden">
+              <div className="absolute inset-0 bg-emerald-500 w-full animate-progress-shrink origin-left"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-md w-full bg-[#0d1117] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
-        {/* Terminal Header */}
         <div className="bg-[#161b22] px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-widest italic">
             user_registration.init
@@ -67,7 +115,7 @@ const Signup = () => {
                 First_Name
               </label>
               <input
-                required
+                // required
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
@@ -80,7 +128,7 @@ const Signup = () => {
                 Last_Name
               </label>
               <input
-                required
+                // required
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
@@ -95,7 +143,7 @@ const Signup = () => {
               Network_Identity (Email)
             </label>
             <input
-              required
+              // required
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -110,7 +158,7 @@ const Signup = () => {
               Access_Key (Password)
             </label>
             <input
-              required
+              // required
               name="password"
               value={formData.password}
               onChange={handleChange}
