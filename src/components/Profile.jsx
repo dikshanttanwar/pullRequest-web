@@ -1,12 +1,15 @@
 import { useSelector } from "react-redux";
+import EditProfileForm from "./EditProfileForm";
 
 const Profile = () => {
   let user = useSelector((appStore) => appStore.user);
-    // console.log(user)
+
   return (
-    <>
-      <pre>{user && user.message}</pre>
-    </>
+    user && (
+      <>
+        <EditProfileForm user={user} />
+      </>
+    )
   );
 };
 

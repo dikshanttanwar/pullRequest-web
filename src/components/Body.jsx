@@ -1,6 +1,6 @@
 import NavBar from "./NavBar";
 import Footer from "./Footer";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../utils/userSlice";
@@ -11,9 +11,9 @@ const Body = () => {
   let dispatch = useDispatch();
   let navigate = useNavigate();
   let userData = useSelector((appStore) => appStore.user);
+  let location = useLocation();
 
   const fetchUser = async () => {
-    console.log("fetchUser function call!!!!!");
     try {
       if (userData) return;
 
@@ -24,14 +24,18 @@ const Body = () => {
       dispatch(addUser(res.data));
     } catch (err) {
       if (err.response?.status === 401) {
-        navigate("/login");
+        if (location.pathname === "/signup") {
+          return navigate("/signup");
+        } else {
+          navigate("/login");
+        }
       }
     }
   };
 
   useEffect(() => {
     fetchUser();
-  }, []); 
+  }, []);
 
   return (
     <>
