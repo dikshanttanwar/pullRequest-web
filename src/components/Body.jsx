@@ -10,12 +10,12 @@ import { useEffect } from "react";
 const Body = () => {
   let dispatch = useDispatch();
   let navigate = useNavigate();
-  let userData = useSelector((appStore) => appStore.user);
+  let user = useSelector((appStore) => appStore.user);
   let location = useLocation();
 
   const fetchUser = async () => {
     try {
-      if (userData) return;
+      if (user) return;
 
       let res = await axios.get(BASE_URL + "/profile/view", {
         withCredentials: true,
@@ -34,8 +34,12 @@ const Body = () => {
   };
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    const authRoutes = ["/signup", "/login"];
+
+    if (!authRoutes.includes(location.pathname) && !user) {
+      fetchUser();
+    }
+  }, [location.pathname, user]);
 
   return (
     <>

@@ -92,7 +92,7 @@ const Connections = () => {
               </div>
 
               {/* Identity & Metadata */}
-              <div className="flex-grow min-w-0">
+              <div className="grow min-w-0">
                 <div className="flex items-center gap-3">
                   <h2 className="text-lg font-bold text-white truncate group-hover:text-indigo-300 transition-colors">
                     {user.firstName} {user.lastName}
