@@ -39,7 +39,7 @@ const Connections = () => {
       </div>
     );
 
-  if (!connections || connections.length === 0)
+  if (!connections || connections.data.length === 0)
     return (
       <div className="min-h-screen bg-[#020617] flex flex-col items-center justify-center font-mono p-6">
         <div className="text-slate-700 text-6xl mb-4 opacity-20 italic">
@@ -57,7 +57,6 @@ const Connections = () => {
       </div>
     );
 
-  console.log(connections.data);
 
   return (
     <div className="min-h-screen bg-[#020617] pt-28 pb-20 px-4">
@@ -69,7 +68,7 @@ const Connections = () => {
               Nodes<span className="text-indigo-500">.active</span>
             </h1>
             <p className="text-slate-500 text-[10px] uppercase tracking-[0.3em] mt-1">
-              Network Strength: {connections.length} Stable Connections
+              Network Strength: {connections.data.length} Stable Connections
             </p>
           </div>
         </div>

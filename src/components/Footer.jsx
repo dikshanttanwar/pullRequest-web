@@ -22,16 +22,6 @@ const Footer = () => {
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-white text-xs font-bold uppercase tracking-widest">system_links</h4>
-            <nav className="flex flex-col gap-2 text-xs">
-              <Link to="/" className="hover:text-indigo-400 transition-colors">/discover</Link>
-              <Link to="/connections" className="hover:text-indigo-400 transition-colors">/network</Link>
-              <Link to="/requests" className="hover:text-indigo-400 transition-colors">/requests_queue</Link>
-              <Link to="/profile" className="hover:text-indigo-400 transition-colors">/settings_config</Link>
-            </nav>
-          </div>
-
-          <div className="space-y-4">
             <h4 className="text-white text-xs font-bold uppercase tracking-widest">social_protocols</h4>
             <div className="flex gap-4">
               <a href="#" className="hover:text-white transition-colors">
@@ -53,7 +43,7 @@ const Footer = () => {
             <span>v1.0.4-stable</span>
           </div>
           <p className="text-[10px] uppercase tracking-widest">
-            Copyright © {new Date().getFullYear()} — Engineered by devTinder Labs
+            Copyright © {new Date().getFullYear()} — Engineered by PullRequest Labs
           </p>
         </div>
       </div>

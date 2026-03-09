@@ -8,6 +8,7 @@ import Profile from "./components/Profile";
 import Connections from "./components/Connections";
 import Requests from "./components/Requests";
 import Signup from "./components/Signup";
+import Settings from "./components/Settings";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path="/feed" element={<Feed />} />
               <Route path="/connections" element={<Connections />} />
               <Route path="/requests" element={<Requests />} />
+              <Route path="/settings" element={<Settings />} />
 
               <Route path="*" element={"404 Not Found!"} />
             </Route>

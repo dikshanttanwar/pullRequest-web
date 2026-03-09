@@ -135,6 +135,17 @@ const NavBar = () => {
                       SHIFT+P
                     </span>
                   </Link>
+
+                  <Link
+                    to="/settings"
+                    className="flex justify-between py-2 text-gray-300 hover:text-white hover:bg-indigo-500/10 active:bg-indigo-500"
+                  >
+                    <span>view_settings()</span>
+                    <span className="text-[9px] bg-[#30363d] px-1 rounded text-white">
+                      SHIFT+P
+                    </span>
+                  </Link>
+
                 </li>
                 {/* Mobile-only links for accessibility */}
                 <li className="md:hidden">
@@ -162,7 +173,7 @@ const NavBar = () => {
           </div>
         ) : (
           <Link
-            to={location.pathname === "/login" ? "/login" : "/signup"}
+            to={location.pathname === "/login" ? "/signup" : "/login"}
             className="btn btn-ghost btn-sm text-xs font-bold uppercase tracking-widest text-indigo-400"
           >
             Login // Sign In

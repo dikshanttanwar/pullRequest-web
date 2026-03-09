@@ -41,7 +41,6 @@ const Feed = () => {
         {},
         { withCredentials: true },
       );
-      console.log(res);
       setSwipeDir(direction === "interested" ? 1 : -1);
       setTimeout(() => {
         dispatch(removeFeed(userId));

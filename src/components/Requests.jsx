@@ -19,7 +19,6 @@ const Requests = () => {
         withCredentials: true,
       });
       dispatch(addRequest(res?.data?.connectionRequests || []));
-      console.log(res?.data);
     } catch (err) {
       console.error("Received Fetch Error:", err);
     }
@@ -31,7 +30,6 @@ const Requests = () => {
         withCredentials: true,
       });
       dispatch(addPending(res?.data?.connectionRequests || []));
-      console.log(res?.data);
     } catch (err) {
       console.error("Sent Fetch Error:", err);
     }
