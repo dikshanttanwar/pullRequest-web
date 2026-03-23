@@ -66,12 +66,20 @@ const UserProfile = () => {
           {/* Aesthetic Image Card */}
           <div className="relative group rounded-3xl p-1 bg-gradient-to-b from-zinc-800/80 to-zinc-900/50 shadow-xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl"></div>
-            <div className="relative aspect-[4/5] rounded-[1.3rem] overflow-hidden bg-black z-10 border border-zinc-800/50 shadow-inner">
-              <img
-                src={mainPhoto}
-                alt={`${targetUser.firstName}`}
-                className="w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 transition-all duration-700"
-              />
+            <div className="relative aspect-[4/5] rounded-[1.3rem] overflow-hidden bg-zinc-950 flex items-center justify-center text-indigo-500 text-[8rem] font-black z-10 border border-zinc-800/50 shadow-inner">
+              {mainPhoto ? (
+                <img
+                  src={mainPhoto}
+                  alt={`${targetUser.firstName}`}
+                  className="absolute inset-0 w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 transition-all duration-700"
+                />
+              ) : (
+                <span className="opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                  {targetUser.firstName
+                    ? targetUser.firstName[0].toUpperCase()
+                    : "?"}
+                </span>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent pointer-events-none"></div>
 
               {/* Glassmorphism Title Plate */}

@@ -57,7 +57,6 @@ const Connections = () => {
       </div>
     );
 
-
   return (
     <div className="min-h-screen bg-[#020617] pt-28 pb-20 px-4">
       <div className="max-w-4xl mx-auto">
@@ -75,69 +74,51 @@ const Connections = () => {
 
         {/* The List Container */}
         <div className="space-y-4">
-          {connections.data.map((user) => (
+          {connections.data.filter(Boolean).map((user) => (
             <div
               key={user._id}
-              className="group relative flex items-center gap-6 bg-[#0f172a]/40 backdrop-blur-md border border-slate-800/50 p-4 rounded-2xl hover:bg-slate-800/30 hover:border-indigo-500/50 transition-all duration-300 shadow-xl"
+              className="group bg-[#0d1117] border border-slate-800 p-5 rounded-2xl flex items-center gap-6 hover:border-indigo-500/40 transition-all shadow-xl"
             >
-              {/* Profile Image with Glow */}
-              <div className="relative shrink-0">
-                <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-700 group-hover:border-indigo-400 transition-colors shadow-2xl flex items-center justify-center">
-                  {user.photoURL && (
-                    <img
-                      src={user.photoURL}
-                      alt={user.firstName}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                    />
-                  )}
-                  {!user.photoURL && <p>{user.firstName[0].toUpperCase()}</p>}
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full border-2 border-[#020617] shadow-[0_0_10px_#6366f1]"></div>
+              {/* Profile Avatar */}
+              <div className="w-14 h-14 rounded-xl overflow-hidden bg-slate-800 flex items-center justify-center text-indigo-400 font-bold border border-slate-700 shrink-0">
+                {user.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt={user.firstName}
+                    className="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+                  />
+                ) : (
+                  <span>
+                    {user.firstName ? user.firstName[0].toUpperCase() : "?"}
+                  </span>
+                )}
               </div>
 
-              {/* Identity & Metadata */}
-              <div className="grow min-w-0">
-                <div className="flex items-center gap-3">
-                  <h2 className="text-lg font-bold text-white truncate group-hover:text-indigo-300 transition-colors">
-                    {user.firstName} {user.lastName}
-                  </h2>
-                  <span className="text-[9px] font-mono text-slate-600 bg-slate-900 px-2 py-0.5 rounded border border-slate-800 uppercase">
+              {/* Central Details */}
+              <div className="flex-grow min-w-0">
+                <h3 className="text-white font-bold text-sm tracking-tight flex items-center gap-3">
+                  {user.firstName} {user.lastName}
+                  <span className="text-[8px] font-mono text-slate-500 bg-slate-900/50 px-2 py-0.5 rounded border border-slate-800 uppercase">
                     Age: {user.age}
                   </span>
-                </div>
-                <p className="text-slate-400 text-xs mt-1 font-mono italic line-clamp-1 opacity-70 group-hover:opacity-100 transition-opacity">
-                  &gt; {user.about || "No metadata description available."}
+                </h3>
+                <p className="text-slate-500 text-[9px] mt-1 font-mono uppercase tracking-widest truncate">
+                  // {user.about || "Active Connection Node"}
                 </p>
               </div>
 
               {/* Action Gutter */}
               <div className="flex gap-2">
-                <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-indigo-600 hover:border-indigo-500 transition-all shadow-lg">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                    />
-                  </svg>
+                <button className="px-4 py-2 border border-slate-700/50 text-slate-400 text-[10px] font-bold uppercase rounded-lg hover:bg-slate-800 hover:text-white transition-all cursor-pointer shadow-sm">
+                  Chat
                 </button>
                 <Link
                   to={`/profile/${user._id}`}
-                  className="h-10 px-4 flex items-center justify-center rounded-xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-lg shadow-indigo-500/10"
+                  className="px-4 py-2 bg-indigo-600 text-white text-[10px] font-bold uppercase rounded-lg hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20 text-center flex items-center"
                 >
-                  Open_Profile
+                  View Profile
                 </Link>
               </div>
-
-              {/* Subtle Gradient Line behind the row */}
-              <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent"></div>
             </div>
           ))}
         </div>

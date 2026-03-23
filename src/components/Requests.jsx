@@ -84,70 +84,82 @@ const Requests = () => {
         <div className="space-y-4">
           {activeTab === "incoming" ? (
             requests?.length > 0 ? (
-              requests.map((req) => (
-                <div
-                  key={req._id}
-                  className="group bg-[#0d1117] border border-slate-800 p-5 rounded-2xl flex items-center gap-6 hover:border-indigo-500/40 transition-all shadow-xl"
-                >
-                  {/* Note: Mapping to req.fromUserID based on your response */}
-                  <div className="w-14 h-14 rounded-xl bg-slate-800 flex items-center justify-center text-indigo-400 font-bold border border-slate-700">
-                    {req.fromUserID.firstName[0]}
+              requests.map((req) => {
+                const fromUser = req.fromUserID || {
+                  firstName: "Deleted",
+                  lastName: "User",
+                };
+                return (
+                  <div
+                    key={req._id}
+                    className="group bg-[#0d1117] border border-slate-800 p-5 rounded-2xl flex items-center gap-6 hover:border-indigo-500/40 transition-all shadow-xl"
+                  >
+                    {/* Note: Mapping to req.fromUserID based on your response */}
+                    <div className="w-14 h-14 rounded-xl bg-slate-800 flex items-center justify-center text-indigo-400 font-bold border border-slate-700">
+                      {fromUser.firstName[0]}
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className="text-white font-bold text-sm tracking-tight">
+                        {fromUser.firstName} {fromUser.lastName}
+                      </h3>
+                      <p className="text-slate-500 text-[9px] mt-1 uppercase tracking-widest">
+                        Inbound // Status: {req.status}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => reviewRequest("rejected", req._id)}
+                        className="px-4 py-2 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                      >
+                        Reject
+                      </button>
+                      <button
+                        onClick={() => reviewRequest("accepted", req._id)}
+                        className="px-4 py-2 bg-indigo-600 text-white text-[10px] font-bold uppercase rounded-lg hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20 cursor-pointer"
+                      >
+                        Accept
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex-grow">
-                    <h3 className="text-white font-bold text-sm tracking-tight">
-                      {req.fromUserID.firstName} {req.fromUserID.lastName}
-                    </h3>
-                    <p className="text-slate-500 text-[9px] mt-1 uppercase tracking-widest">
-                      Inbound // Status: {req.status}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => reviewRequest("rejected", req._id)}
-                      className="px-4 py-2 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"
-                    >
-                      Reject
-                    </button>
-                    <button
-                      onClick={() => reviewRequest("accepted", req._id)}
-                      className="px-4 py-2 bg-indigo-600 text-white text-[10px] font-bold uppercase rounded-lg hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20 cursor-pointer"
-                    >
-                      Accept
-                    </button>
-                  </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <p className="text-slate-600 text-xs italic text-center py-10">
                 // No incoming requests found.
               </p>
             )
           ) : pending?.length > 0 ? (
-            pending.map((req) => (
-              <div
-                key={req._id}
-                className="bg-[#0d1117]/50 border border-slate-800/50 p-5 rounded-2xl flex items-center gap-6 opacity-80"
-              >
-                {/* Note: Mapping to req.toUserID based on your response */}
-                <div className="w-14 h-14 rounded-xl bg-slate-900 flex items-center justify-center text-slate-500 font-bold border border-slate-800">
-                  {req.toUserID.firstName[0]}
+            pending.map((req) => {
+              const toUser = req.toUserID || {
+                firstName: "Deleted",
+                lastName: "User",
+              };
+              return (
+                <div
+                  key={req._id}
+                  className="bg-[#0d1117]/50 border border-slate-800/50 p-5 rounded-2xl flex items-center gap-6 opacity-80"
+                >
+                  {/* Note: Mapping to req.toUserID based on your response */}
+                  <div className="w-14 h-14 rounded-xl bg-slate-900 flex items-center justify-center text-slate-500 font-bold border border-slate-800">
+                    {toUser.firstName[0]}
+                  </div>
+                  <div className="flex-grow">
+                    <h3 className="text-slate-300 font-bold text-sm tracking-tight">
+                      {toUser.firstName} {toUser.lastName}
+                    </h3>
+                    <p className="text-slate-600 text-[9px] mt-1 italic tracking-widest font-bold">
+                      // AWAITING_RESPONSE_FROM_PEER
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-indigo-500/50"></span>
+                    <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest">
+                      Outbound
+                    </span>
+                  </div>
                 </div>
-                <div className="flex-grow">
-                  <h3 className="text-slate-300 font-bold text-sm tracking-tight">
-                    {req.toUserID.firstName} {req.toUserID.lastName}
-                  </h3>
-                  <p className="text-slate-600 text-[9px] mt-1 italic tracking-widest font-bold">
-                    // AWAITING_RESPONSE_FROM_PEER
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-indigo-500/50"></span>
-                  <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest">
-                    Outbound
-                  </span>
-                </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <p className="text-slate-600 text-xs italic text-center py-10">
               // Outbox is empty.
