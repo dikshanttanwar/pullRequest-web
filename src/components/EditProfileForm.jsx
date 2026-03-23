@@ -231,7 +231,7 @@ const EditProfileForm = ({ user, onComplete }) => {
   return (
     <div className="flex flex-col h-full bg-[#0d1117] font-mono animate-fadeIn relative overflow-hidden w-full">
       {/* Tab Bar */}
-      <div className="flex bg-[#161b22] border-b border-[#30363d] overflow-x-auto custom-scrollbar">
+      <div className="min-h-fit flex bg-[#161b22] border-b border-[#30363d] overflow-x-auto custom-scrollbar">
         <div className="px-5 py-2.5 bg-[#0d1117] border-t-2 border-indigo-500 text-xs flex items-center justify-between gap-4 group min-w-max">
           <span className="flex items-center gap-2">
             <span className="text-yellow-400">⚡</span> user.config.json

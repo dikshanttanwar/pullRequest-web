@@ -111,7 +111,7 @@ const Profile = () => {
             ) : (
               <div className="flex flex-col h-full animate-fadeIn relative w-full">
                 {/* Tab Bar */}
-                <div className="flex bg-[#161b22] border-b border-[#30363d] overflow-x-auto custom-scrollbar shrink-0">
+                <div className="min-h-fit flex bg-[#161b22] border-b border-[#30363d] overflow-x-auto custom-scrollbar shrink-0">
                   <div className="px-5 py-2.5 bg-[#0d1117] border-t-2 border-indigo-500 text-xs flex items-center justify-between gap-6 min-w-max border-r border-[#30363d]">
                     <span className="flex items-center gap-2 select-none">
                       {activeTab === "README.md" && (
@@ -149,15 +149,23 @@ const Profile = () => {
                     {activeTab === "README.md" && (
                       <div className="max-w-3xl space-y-6 animate-fadeIn">
                         <div className="pb-6 border-b border-[#30363d]/50 flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                          <div className="w-32 h-32 rounded-full overflow-hidden border border-[#30363d] shrink-0 p-1 bg-[#161b22] shadow-2xl">
-                            <img
-                              src={
-                                user.photoURL ||
-                                "https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png"
-                              }
-                              className="w-full h-full object-cover rounded-full grayscale-[20%] hover:grayscale-0 transition-all duration-500"
-                              alt="avatar"
-                            />
+                          <div className="w-32 h-32 flex items-center justify-center rounded-full overflow-hidden border border-[#30363d] shrink-0 p-1 bg-[#161b22] shadow-2xl">
+                            {user.photoURL ? (
+                              <img
+                                src={
+                                  user.photoURL ||
+                                  "https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png"
+                                }
+                                className="w-full h-full object-cover rounded-full grayscale-[20%] hover:grayscale-0 transition-all duration-500"
+                                alt="avatar"
+                              />
+                            ) : (
+                              <span className="w-full h-full flex items-center justify-center opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 text-5xl pointer-events-none">
+                                {user.firstName
+                                  ? user.firstName[0].toUpperCase()
+                                  : "?"}
+                              </span>
+                            )}
                           </div>
                           <div className="pt-2 text-center sm:text-left">
                             <h1 className="text-3xl font-black text-white tracking-tight">
