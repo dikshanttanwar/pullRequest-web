@@ -6,51 +6,29 @@ import { useSelector } from "react-redux";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const user = useSelector((store) => store.user); //
-  const [activeFile, setActiveFile] = useState("auth.config");
+  const user = useSelector((store) => store.user);
+  const [activeTab, setActiveTab] = useState("Security");
   const [isGhostMode, setIsGhostMode] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState("");
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
   });
-  const [systemLogs, setSystemLogs] = useState([
-    "[SYSTEM] Initializing configuration clusters...",
-    "[SUCCESS] Connection stable.",
-  ]);
-
-  const logAction = (msg) =>
-    setSystemLogs((prev) => [`[INFO] ${msg}`, ...prev].slice(0, 5));
-
-  // --- ADDED FUNCTIONALITY: Terminate Account ---
-  const handleTerminateAccount = async () => {
-    logAction("sudo rm -rf ./user_data");
-    logAction("Initiating recursive deletion of user object...");
-
-    try {
-      const res = await axios.delete(`${BASE_URL}/profile/delete`, {
-        withCredentials: true,
-      });
-      logAction(`[SUCCESS] ${res.data.message || "Account purged."}`);
-      setTimeout(() => navigate("/login"), 2000);
-    } catch (err) {
-      const errorMsg = err?.response?.data?.message || "DELETION_FAILED";
-      logAction(`[FATAL] ${errorMsg.toUpperCase()}`);
-    }
-  };
+  const [status, setStatus] = useState({ type: "", message: "" });
 
   const handleUpdatePassword = async () => {
-    logAction("sh rotate_keys.sh --force");
-    logAction("Validating RSA keypair integrity...");
-
+    setStatus({ type: "loading", message: "Updating credentials..." });
     if (!passwordData.currentPassword || !passwordData.newPassword) {
-      logAction("[ERROR] ERR_NULL_POINTER: Password fields cannot be empty.");
-      return;
+      return setStatus({
+        type: "error",
+        message: "Password fields cannot be empty.",
+      });
     }
-
     if (passwordData.currentPassword === passwordData.newPassword) {
-      logAction("[ERROR] Password cannot be same as old one!.");
-      return;
+      return setStatus({
+        type: "error",
+        message: "New password must be different.",
+      });
     }
 
     try {
@@ -62,323 +40,323 @@ const Settings = () => {
         },
         { withCredentials: true },
       );
-
-      logAction(
-        `[SUCCESS] ${res.data.message || "Credentials rotated successfully."}`,
-      );
+      setStatus({
+        type: "success",
+        message:
+          res.data.message ||
+          "Password updated successfully. Please login again.",
+      });
       setPasswordData({ currentPassword: "", newPassword: "" });
-      navigate("/login");
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      const errorMsg =
-        err?.response?.data?.message ||
-        err?.data?.message ||
-        "ERR_CONNECTION_REFUSED";
-      logAction(`[FATAL] ${errorMsg.toUpperCase()}`);
-      logAction("Exited with code 1");
+      setStatus({
+        type: "error",
+        message:
+          err?.response?.data?.message ||
+          err?.data?.message ||
+          "Failed to update password.",
+      });
     }
   };
 
-  const fileTree = [
-    {
-      name: "auth.config",
-      icon: "🔑",
-      color: "text-yellow-500",
-      group: "SECURITY",
-    },
-    {
-      name: "privacy.yaml",
-      icon: "🛡️",
-      color: "text-blue-400",
-      group: "SECURITY",
-    },
-    {
-      name: "appearance.theme",
-      icon: "🎨",
-      color: "text-purple-400",
-      group: "UI",
-    },
-    {
-      name: "notifications.json",
-      icon: "🔔",
-      color: "text-emerald-400",
-      group: "UI",
-    },
-    {
-      name: "api_keys.env",
-      icon: "⚡",
-      color: "text-orange-400",
-      group: "DEVELOPER",
-    },
-    {
-      name: "danger_zone.sh",
-      icon: "💀",
-      color: "text-red-500",
-      group: "SYSTEM",
-    },
+  const handleTerminateAccount = async () => {
+    setStatus({ type: "loading", message: "Terminating user account..." });
+    try {
+      const res = await axios.delete(`${BASE_URL}/profile/delete`, {
+        withCredentials: true,
+      });
+      setStatus({
+        type: "success",
+        message: res.data.message || "Account permanently deleted.",
+      });
+      setTimeout(() => navigate("/login"), 1500);
+    } catch (err) {
+      setStatus({
+        type: "error",
+        message: err?.response?.data?.message || "Failed to terminate account.",
+      });
+    }
+  };
+
+  const tabs = [
+    { id: "Security", icon: "🔒", label: "Security & Access" },
+    { id: "Privacy", icon: "🛡️", label: "Privacy Details" },
+    { id: "Developer", icon: "⌨️", label: "Developer API" },
+    { id: "DangerZone", icon: "⚠️", label: "Danger Zone" },
   ];
 
   return (
-    <div className="min-h-screen bg-[#08090a] text-[#d1d5db] font-mono pt-24 pb-10 px-4">
-      <div className="max-w-6xl mx-auto border border-[#30363d] rounded-lg overflow-hidden shadow-2xl bg-[#0d1117] flex flex-col h-[700px]">
-        {/* IDE Top Bar */}
-        <div className="bg-[#161b22] px-4 py-2 border-b border-[#30363d] flex items-center justify-between text-[11px] text-slate-500">
-          <div className="flex gap-4">
-            <span>File</span>
-            <span>Edit</span>
-            <span>Terminal</span>
-            <span>Help</span>
+    <div className="min-h-screen bg-[#09090b] text-zinc-200 font-sans pt-24 pb-16 px-4 sm:px-6 selection:bg-indigo-500/30">
+      <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-8 lg:gap-12 items-start">
+        {/* SIDEBAR NAVIGATION */}
+        <aside className="w-full md:w-64 shrink-0 flex flex-col gap-1.5 md:sticky md:top-28">
+          <div className="mb-6 px-3">
+            <h1 className="text-3xl font-bold text-white tracking-tight">
+              Settings
+            </h1>
+            <p className="text-sm text-zinc-500 mt-1 font-medium">
+              Manage your account preferences
+            </p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded text-[9px] font-bold">
-              V1.0.4-STABLE
-            </span>
-          </div>
-        </div>
 
-        <div className="flex flex-grow overflow-hidden">
-          <aside className="w-64 bg-[#0d1117] border-r border-[#30363d] overflow-y-auto">
-            <div className="p-4 text-[10px] uppercase font-bold text-slate-500 tracking-widest flex justify-between">
-              Explorer <span className="opacity-50">...</span>
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setStatus({ type: "", message: "" });
+                setConfirmDelete("");
+                setPasswordData({ currentPassword: "", newPassword: "" });
+              }}
+              className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
+                activeTab === tab.id
+                  ? "bg-zinc-800/80 text-white shadow-sm border border-zinc-700/50"
+                  : "text-zinc-400 hover:bg-zinc-800/30 hover:text-zinc-200 border border-transparent"
+              } ${tab.id === "DangerZone" && activeTab !== tab.id ? "hover:text-red-400 hover:bg-red-500/10" : ""} ${
+                tab.id === "DangerZone" && activeTab === tab.id
+                  ? "bg-red-500/10 border-red-500/20 text-red-500"
+                  : ""
+              }`}
+            >
+              <span className="text-lg opacity-80">{tab.icon}</span>
+              {tab.label}
+            </button>
+          ))}
+        </aside>
+
+        {/* MAIN SETTINGS CONTENT */}
+        <main className="flex-1 w-full flex flex-col gap-6">
+          {/* Feedback Status Bar */}
+          {status.message && (
+            <div
+              className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 ${
+                status.type === "error"
+                  ? "bg-red-500/10 border-red-500/20 text-red-400"
+                  : status.type === "success"
+                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                    : "bg-blue-500/10 border-blue-500/20 text-blue-400"
+              }`}
+            >
+              {status.type === "loading" && (
+                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+              )}
+              {status.message}
             </div>
-            {fileTree.map((file) => (
-              <div
-                key={file.name}
-                onClick={() => {
-                  setActiveFile(file.name);
-                  logAction(`Accessing ${file.name}`);
-                }}
-                className={`flex items-center justify-between px-6 py-2 cursor-pointer transition-colors text-xs ${
-                  activeFile === file.name
-                    ? "bg-[#21262d] text-white border-l-2 border-indigo-500"
-                    : "hover:bg-[#161b22] text-slate-400"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className={file.color}>{file.icon}</span> {file.name}
+          )}
+
+          <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-[2rem] p-6 md:p-10 shadow-xl overflow-hidden min-h-[400px]">
+            {activeTab === "Security" && (
+              <div className="space-y-8 animate-fadeIn">
+                <div>
+                  <h2 className="text-xl font-bold text-white mb-2">
+                    Update Password
+                  </h2>
+                  <p className="text-zinc-400 text-sm">
+                    Ensure your account is using a long, random password to stay
+                    secure.
+                  </p>
                 </div>
-                <span className="text-[8px] opacity-30 italic">
-                  {file.group}
-                </span>
-              </div>
-            ))}
-          </aside>
 
-          <main className="flex-grow flex flex-col bg-[#0d1117] relative">
-            <div className="flex bg-[#161b22] border-b border-[#30363d]">
-              <div className="px-6 py-2 bg-[#0d1117] border-t-2 border-indigo-500 text-xs flex items-center gap-2">
-                <span className="text-blue-400">{}</span> {activeFile}
-              </div>
-            </div>
-
-            <div className="flex-grow p-8 overflow-y-auto custom-scrollbar flex gap-6">
-              <div className="text-slate-700 text-xs text-right select-none leading-8 opacity-40">
-                {Array.from({ length: 15 }).map((_, i) => (
-                  <div key={i}>{i + 1}</div>
-                ))}
-              </div>
-
-              <div className="flex-grow">
-                {activeFile === "auth.config" && (
-                  <div className="space-y-6 animate-fadeIn">
-                    <p className="text-yellow-500/70 text-xs italic">
-                      // SECURE_CREDENTIAL_STORE v2.1
-                    </p>
-                    <div className="space-y-4 max-w-sm">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-pink-400 text-xs">
-                          "current_hash":
-                        </span>
-                        <input
-                          type="password"
-                          value={passwordData.currentPassword}
-                          onChange={(e) =>
-                            setPasswordData({
-                              ...passwordData,
-                              currentPassword: e.target.value,
-                            })
-                          }
-                          placeholder="••••••••"
-                          className="bg-transparent border-b border-slate-800 focus:border-indigo-500 outline-none p-1 text-emerald-400 text-sm"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-pink-400 text-xs">
-                          "new_rsa_key":
-                        </span>
-                        <input
-                          type="password"
-                          value={passwordData.newPassword}
-                          onChange={(e) =>
-                            setPasswordData({
-                              ...passwordData,
-                              newPassword: e.target.value,
-                            })
-                          }
-                          placeholder="••••••••"
-                          className="bg-transparent border-b border-slate-800 focus:border-indigo-500 outline-none p-1 text-emerald-400 text-sm"
-                        />
-                      </div>
-                      <button
-                        onClick={handleUpdatePassword}
-                        className="mt-4 px-4 py-2 bg-indigo-600/20 border border-indigo-500/50 text-indigo-400 text-[10px] font-bold uppercase tracking-widest hover:bg-indigo-500 hover:text-white transition-all"
-                      >
-                        sh rotate_keys.sh --force
-                      </button>
-                    </div>
+                <div className="space-y-5 max-w-md">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                      Current Password
+                    </label>
+                    <input
+                      type="password"
+                      value={passwordData.currentPassword}
+                      onChange={(e) =>
+                        setPasswordData({
+                          ...passwordData,
+                          currentPassword: e.target.value,
+                        })
+                      }
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-mono placeholder:font-sans placeholder:text-zinc-600"
+                      placeholder="••••••••"
+                    />
                   </div>
-                )}
-
-                {activeFile === "privacy.yaml" && (
-                  <div className="space-y-6 animate-fadeIn">
-                    <p className="text-blue-400/70 text-xs">
-                      # Network Discovery Protocols
-                    </p>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-4">
-                        <span className="text-pink-400 text-xs">
-                          stealth_mode:
-                        </span>
-                        <button
-                          onClick={() => {
-                            setIsGhostMode(!isGhostMode);
-                            logAction(`Stealth Mode: ${!isGhostMode}`);
-                          }}
-                          className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${isGhostMode ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"}`}
-                        >
-                          {isGhostMode ? "enabled" : "disabled"}
-                        </button>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className="text-pink-400 text-xs">
-                          public_api_access:
-                        </span>
-                        <span className="text-emerald-400 text-xs">true</span>
-                      </div>
-                      <p className="text-slate-600 text-[10px] leading-relaxed">
-                        # If stealth_mode is true, your UUID is purged from
-                        'Discover' but remains in 'Matches'.
-                      </p>
-                    </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      value={passwordData.newPassword}
+                      onChange={(e) =>
+                        setPasswordData({
+                          ...passwordData,
+                          newPassword: e.target.value,
+                        })
+                      }
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-mono placeholder:font-sans placeholder:text-zinc-600"
+                      placeholder="••••••••"
+                    />
                   </div>
-                )}
 
-                {/* --- ADDED CONTENT: api_keys.env --- */}
-                {activeFile === "api_keys.env" && (
-                  <div className="space-y-6 animate-fadeIn">
-                    <p className="text-orange-400/70 text-xs">
-                      # Authenticated Developer Environment Variables
-                    </p>
-                    <div className="space-y-3 font-mono text-[11px]">
-                      {/* Dynamic Token: Uses the first 8 chars of the User ID for uniqueness */}
-                      <div className="flex flex-col gap-1">
-                        <span className="text-slate-500 text-[10px]">
-                          # USER_SPECIFIC_ACCESS_TOKEN
-                        </span>
-                        <div className="flex gap-2">
-                          <span className="text-pink-400">
-                            DEVTINDER_ACCESS_TOKEN=
-                          </span>
-                          <span className="text-emerald-400 select-all tracking-tighter">
-                            "dt_live_{user?._id?.slice(-8) || "00000000"}_
-                            {Math.random().toString(36).substring(7)}"
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Dynamic Secret: Mimics an RSA key tied to the user's account */}
-                      <div className="flex flex-col gap-1">
-                        <span className="text-slate-500 text-[10px]">
-                          # SHA256_SESSION_IDENTIFIER
-                        </span>
-                        <div className="flex gap-2">
-                          <span className="text-pink-400">SESSION_SECRET=</span>
-                          <span className="text-emerald-400 select-all italic opacity-80">
-                            "rsa_v2_{user?.firstName?.toLowerCase()}_pkcs8_
-                            {user?._id?.slice(0, 4)}"
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <span className="text-pink-400">NODE_ENV=</span>
-                        <span className="text-blue-400">"production"</span>
-                      </div>
-                    </div>
-
-                    <div className="mt-8 p-4 border border-indigo-500/20 bg-indigo-500/5 rounded text-[10px] text-indigo-300 italic">
-                      // Note: These keys are rotated every 24 hours for
-                      security compliance.
-                    </div>
-                  </div>
-                )}
-
-                {activeFile === "danger_zone.sh" && (
-                  <div className="space-y-6 animate-fadeIn">
-                    <p className="text-red-500 text-xs font-bold">
-                      #!/bin/bash/system-wipe
-                    </p>
-                    <div className="p-6 border border-red-900/30 bg-red-900/10 rounded-lg">
-                      <p className="text-red-400 text-[10px] mb-4 uppercase tracking-tighter italic">
-                        // Warning: This script triggers a recursive delete on
-                        assets.
-                      </p>
-                      <input
-                        type="text"
-                        placeholder="echo 'TERMINATE' to confirm"
-                        value={confirmDelete}
-                        onChange={(e) => setConfirmDelete(e.target.value)}
-                        className="w-full bg-black/60 border border-red-900/50 p-3 rounded text-red-500 outline-none text-xs font-mono mb-4"
-                      />
-                      <button
-                        onClick={handleTerminateAccount}
-                        disabled={confirmDelete !== "TERMINATE"}
-                        className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${confirmDelete === "TERMINATE" ? "bg-red-600 text-white" : "bg-slate-800 text-slate-600 cursor-not-allowed"}`}
-                      >
-                        sudo rm -rf ./user_data
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="h-24 bg-[#0d1117] border-t border-[#30363d] p-3 overflow-hidden">
-              <div className="text-[9px] font-bold text-slate-600 mb-1 uppercase tracking-tighter">
-                Terminal Output:
-              </div>
-              {systemLogs.map((log, i) => {
-                const getLogColor = (text) => {
-                  if (text.includes("[FATAL]") || text.includes("[ERROR]"))
-                    return "text-red-500 font-bold";
-                  if (text.includes("[SUCCESS]")) return "text-emerald-400";
-                  if (text.includes("[INFO]")) return "text-blue-400";
-                  return i === 0
-                    ? "text-indigo-400"
-                    : "text-slate-500 opacity-60";
-                };
-                return (
-                  <div
-                    key={i}
-                    className={`text-[9px] leading-tight mb-0.5 font-mono ${getLogColor(log)}`}
+                  <button
+                    onClick={handleUpdatePassword}
+                    className="mt-4 bg-zinc-100 text-black font-semibold text-sm px-6 py-2.5 rounded-xl hover:bg-white transition-colors shadow-sm"
                   >
-                    {log}
-                  </div>
-                );
-              })}
-            </div>
-          </main>
-        </div>
+                    Save Password
+                  </button>
+                </div>
+              </div>
+            )}
 
-        <div className="bg-indigo-600 text-white px-4 py-0.5 flex justify-between items-center text-[9px] font-black uppercase tracking-widest">
-          <div className="flex gap-4">
-            <span>UTF-8</span>
-            <span>Master_Branch</span>
+            {activeTab === "Privacy" && (
+              <div className="space-y-8 animate-fadeIn">
+                <div>
+                  <h2 className="text-xl font-bold text-white mb-2">
+                    Privacy & Visibility
+                  </h2>
+                  <p className="text-zinc-400 text-sm">
+                    Control how your profile behaves inside the discovery
+                    network.
+                  </p>
+                </div>
+
+                <div className="flex items-start justify-between p-5 bg-zinc-950/50 border border-zinc-800/80 rounded-2xl">
+                  <div className="max-w-[70%]">
+                    <h3 className="text-white font-semibold mb-1">
+                      Stealth Mode (Ghost)
+                    </h3>
+                    <p className="text-xs text-zinc-500 leading-relaxed">
+                      When enabled, your profile is hidden from public discovery
+                      swiping, but you remain visible to your existing matches
+                      and active conversations.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsGhostMode(!isGhostMode)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 ${
+                      isGhostMode ? "bg-indigo-500" : "bg-zinc-700"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        isGhostMode ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "Developer" && (
+              <div className="space-y-8 animate-fadeIn">
+                <div>
+                  <h2 className="text-xl font-bold text-white mb-2">
+                    Developer API Tokens
+                  </h2>
+                  <p className="text-zinc-400 text-sm">
+                    Authenticated keys for direct API access to DevTinder
+                    endpoints.
+                  </p>
+                </div>
+
+                <div className="space-y-5">
+                  {/* Token A */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center justify-between">
+                      User Access Token
+                      <span className="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-md text-[9px] font-mono">
+                        ACTIVE
+                      </span>
+                    </label>
+                    <div className="flex bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden group focus-within:border-indigo-500/50 transition-colors">
+                      <input
+                        readOnly
+                        value={`dt_live_${user?._id?.slice(-8) || "xxxxxxxx"}_${Math.random()
+                          .toString(36)
+                          .substring(2, 10)}`}
+                        className="w-full bg-transparent px-4 py-3 text-sm text-zinc-400 font-mono outline-none selection:bg-indigo-500/40"
+                      />
+                      <button className="px-5 text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors border-l border-zinc-800 text-xs font-semibold uppercase tracking-wider bg-zinc-900/50">
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Token B */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                      Session RSA Secret
+                    </label>
+                    <div className="flex bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden group focus-within:border-indigo-500/50 transition-colors">
+                      <input
+                        readOnly
+                        type="password"
+                        value={`rsa_v2_${
+                          user?.firstName?.toLowerCase() || "usr"
+                        }_pkcs8_${user?._id?.slice(0, 4) || "xx"}`}
+                        className="w-full bg-transparent px-4 py-3 text-sm text-zinc-400 font-mono outline-none select-all"
+                      />
+                      <button className="px-5 text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors border-l border-zinc-800 text-xs font-semibold uppercase tracking-wider bg-zinc-900/50">
+                        Reveal
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 p-4 border border-blue-500/20 bg-blue-500/5 rounded-xl text-sm text-blue-300 font-medium flex items-start gap-3 leading-relaxed">
+                    <span className="text-blue-400/80 text-lg leading-none mt-[-2px]">
+                      ℹ️
+                    </span>
+                    For security protocols, your personal session identifiers
+                    are rotated automatically. Do not share these directly in
+                    client-side code repositories.
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "DangerZone" && (
+              <div className="space-y-8 animate-fadeIn">
+                <div>
+                  <h2 className="text-xl font-bold text-red-500 mb-2 flex items-center gap-2">
+                    Permanently Delete Account
+                  </h2>
+                  <p className="text-zinc-400 text-sm">
+                    Once you delete your account, there is no going back. Please
+                    be certain.
+                  </p>
+                </div>
+
+                <div className="p-6 md:p-8 border border-red-500/20 bg-red-500/5 rounded-2xl space-y-6">
+                  <p className="text-red-400/90 text-[15px] font-medium leading-relaxed">
+                    This action will permanently purge all your data, including
+                    photos, matches, private messages, and profile
+                    configurations across all network clusters.
+                  </p>
+
+                  <div className="space-y-2 max-w-md pt-2">
+                    <label className="text-[10px] font-bold text-red-500/70 uppercase tracking-widest">
+                      Type "TERMINATE" to confirm
+                    </label>
+                    <input
+                      type="text"
+                      value={confirmDelete}
+                      onChange={(e) => setConfirmDelete(e.target.value)}
+                      className="w-full bg-black/40 border border-red-500/30 rounded-xl px-4 py-3 text-sm text-red-400 focus:outline-none focus:border-red-500 transition-all font-mono placeholder:text-red-900/50"
+                      placeholder="TERMINATE"
+                    />
+                  </div>
+
+                  <button
+                    disabled={confirmDelete !== "TERMINATE"}
+                    onClick={handleTerminateAccount}
+                    className={`mt-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm ${
+                      confirmDelete === "TERMINATE"
+                        ? "bg-red-600 text-white hover:bg-red-500 cursor-pointer"
+                        : "bg-zinc-900 text-zinc-600 border border-zinc-800 cursor-not-allowed"
+                    }`}
+                  >
+                    Delete My Account
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="flex gap-4">
-            <span>Ready</span>
-            <span>Ln 1, Col 1</span>
-          </div>
-        </div>
+        </main>
       </div>
     </div>
   );

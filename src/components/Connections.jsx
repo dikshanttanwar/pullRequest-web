@@ -83,8 +83,13 @@ const Connections = () => {
               {/* Profile Image with Glow */}
               <div className="relative shrink-0">
                 <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-700 group-hover:border-indigo-400 transition-colors shadow-2xl flex items-center justify-center">
-                  {user.photoURL && <img src={user.photoURL} alt={user.firstName}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />}
+                  {user.photoURL && (
+                    <img
+                      src={user.photoURL}
+                      alt={user.firstName}
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                    />
+                  )}
                   {!user.photoURL && <p>{user.firstName[0].toUpperCase()}</p>}
                 </div>
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full border-2 border-[#020617] shadow-[0_0_10px_#6366f1]"></div>
@@ -124,7 +129,7 @@ const Connections = () => {
                   </svg>
                 </button>
                 <Link
-                  to="/profile"
+                  to={`/profile/${user._id}`}
                   className="h-10 px-4 flex items-center justify-center rounded-xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-lg shadow-indigo-500/10"
                 >
                   Open_Profile
